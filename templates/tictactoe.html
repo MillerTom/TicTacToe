@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+    <style>
+      body {
+          background-color: #ffffff;
+          text-align: center;
+          padding-top: 5em;
+          height: 100%;
+      }
+      div#board {
+          margin: auto;
+          background-color: #ffffff;
+          display: inline-block;
+      }
+      #board table {
+          border-collapse: collapse;
+          text-align: center;
+          vertical-align: middle;
+      }
+      #board table tr td {
+          width: 100px;
+          height: 100px;
+          background-color: #ffffff;
+      }
+      #board table tr td.top,
+      #board table tr td.bottom,
+      #board table tr td.left,
+      #board table tr td.right {
+          border: none;
+      }
+      #board table tr td.center {
+          border-left: 5px solid #ffffff;
+          border-right: 5px solid #ffffff;
+      }
+      #board table tr td.middle {
+          border-top: 5px solid #ffffff;
+          border-bottom: 5px solid #ffffff;
+      }
+      button.cell_link {
+          display: block;
+          font-size: 200%;
+          font-color: black;
+          text-decoration: none;
+          background: #eee url('/media/img/empty.png') no-repeat 5px 5px;
+          height: 100px;
+          width: 100px;
+      }
+      button.cell_link.x,
+      button.cell_link.x:hover {
+          background-image: url('/media/img/x.png');
+          cursor: default;
+      }
+      button.cell_link.o,
+      button.cell_link.o:hover {
+          background-image: url('/media/img/o.png');
+          cursor: default;
+      }
+      #feedback {
+          width: 200px;
+          margin: 0 auto;
+          text-align: center;
+          font-size: 24px;
+          padding-top: 20px;;
+      }
+      #feedback p {
+          margin-top: 1em;
+          font-size: 125%;
+          padding: 1em;
+          background-color: #eee;
+      }
+      #buttons {
+          margin-top: 2em;
+      }
+      #buttons a {
+          padding: 1em;
+          font-size: 125%;
+          background-color: #eee;
+          color: #333;
+      }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.1/angular.min.js"></script>
+    <script>
+        var TicTacToe = angular.module('TicTacToe', []);
+        TicTacToe.config(['$httpProvider', function($httpProvider, $interpolateProvider) {
+            $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+            $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';}
+        ]);
+        TicTacToe.config(function($interpolateProvider) {
+            $interpolateProvider.startSymbol('[[');
+            $interpolateProvider.endSymbol(']]');
+        });
+        TicTacToe.controller('TicTacCtrl', function($scope, $http){
+            $scope.formData = {};
+            $scope.play = function(cell_id){
+                this.formData['cell_id'] = cell_id;
+                $http.post('/play/', this.formData).
+                success(function(data) {
+                    // Needs to be written better. This is bullshit.
+                    if (data['status'] != 'ok') {
+                        $scope.result = data['status'];
+                        $scope.checked0 = true;
+                        $scope.checked1 = true;
+                        $scope.checked2 = true;
+                        $scope.checked3 = true;
+                        $scope.checked4 = true;
+                        $scope.checked5 = true;
+                        $scope.checked6 = true;
+                        $scope.checked7 = true;
+                        $scope.checked8 = true;
+                    }
+                    if (data['value'] == 0){
+                        $scope.status0 = data['player'].toLowerCase();
+                        $scope.checked0 = true;
+                    } else if(data['value'] == 1){
+                        $scope.status1 = data['player'].toLowerCase();
+                        $scope.checked1 = true;
+                    } else if(data['value'] == 2){
+                        $scope.status2 = data['player'].toLowerCase();
+                        $scope.checked2 = true;
+                    } else if(data['value'] == 3){
+                        $scope.status3 = data['player'].toLowerCase();
+                        $scope.checked3 = true;
+                    } else if(data['value'] == 4){
+                        $scope.status4 = data['player'].toLowerCase();
+                        $scope.checked4 = true;
+                    } else if(data['value'] == 5){
+                        $scope.status5 = data['player'].toLowerCase();
+                        $scope.checked5 = true;
+                    } else if(data['value'] == 6){
+                        $scope.status6 = data['player'].toLowerCase();
+                        $scope.checked6 = true;
+                    } else if(data['value'] == 7){
+                        $scope.status7 = data['player'].toLowerCase();
+                        $scope.checked7 = true;
+                    } else if(data['value'] == 8){
+                        $scope.status8 = data['player'].toLowerCase();
+                        $scope.checked8 = true;
+                    }
+                    if (data['status'] != 'ok') {
+                        $scope.again = true
+                    }
+                }).
+                error(function(){
+                    $scope.result = 'Error!';
+                });
+            };
+            $scope.init = function(){
+                $scope.play('');
+            }
+        })
+    </script>
+</head>
+{% if player_name == 'computer' %}
+<body ng-app="TicTacToe" ng-controller="TicTacCtrl" data-ng-init="init()">
+{% else %}
+<body ng-app="TicTacToe" ng-controller="TicTacCtrl">
+{% endif %}
+    <div id="board">
+      <table>
+        <tr>
+        {% for row in board %}
+          {% for cell_label, value, cell_id in row  %}
+          <td ng-click="play({{ cell_id }})" class="{{ cell_label }}" id="{{ cell_id }}" ng-disabled="checked{{ cell_id }}">
+            <button ng-click="status{{ cell_id }}='{{ player_letter|lower }}'; checked{{ cell_id }}=true"
+                    class="cell_link" ng-class="status{{ cell_id }}" ng-disabled=checked{{ cell_id }}>&nbsp;</button>
+          </td>
+          {% endfor %}
+        {% if forloop.last %}
+        </tr>
+        {% else %}
+        </tr>
+        <tr>
+        {% endif %}
+        {% endfor %}
+      </table>
+    </div>
+    <div id="feedback">
+        [[result]]
+    </div>
+    <div id="buttons" ng-show="again">
+        <p><a href="/">Play again?</a> </p>
+    </div>
+</body>
+</html>
