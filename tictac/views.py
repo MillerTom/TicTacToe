@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 from django.http import StreamingHttpResponse
 import engine
 from .engine import Game
@@ -28,6 +29,7 @@ def clear_board(request):
         del request.session['board']
 
 
+@csrf_exempt
 def get_player_letter(request):
     if request.method == 'POST':
         req = json.loads(request.body)
@@ -37,6 +39,7 @@ def get_player_letter(request):
     return request.session['player_letter']
 
 
+@csrf_exempt
 def get_player_name(request):
     if request.method == 'POST':
         req = json.loads(request.body)
@@ -59,14 +62,26 @@ def board(request):
     # always start with a new board
     board_list = new_board()
     request.session['board'] = new_board()
+    if not 'comp_win' in request.session:
+        request.session['comp_win'] = 0
+    if not 'plr_win' in request.session:
+        request.session['plr_win'] = 0
+    if not 'tie' in request.session:
+        request.session['tie'] = 0
     cells = cell_list()
     my_board = [zip(cells[:3], board_list[:3], range(0, 3)),
                 zip(cells[3:6], board_list[3:6], range(3, 6)),
                 zip(cells[6:], board_list[6:], range(6, 9))]
+    score = {
+        'computer': request.session['comp_win'],
+        'player': request.session['plr_win'],
+        'tie': request.session['tie']
+    }
     context = {'board': my_board,
                'player_letter': request.session['player_letter'],
                'computer_letter': engine.OPPONENTS[request.session['player_letter']],
-               'player_name': request.session['player_name']}
+               'player_name': request.session['player_name'],
+               'score': score}
     return render(request, 'tictactoe.html', context)
 
 
@@ -81,6 +96,7 @@ def json_response(status='ok', value=None, player=None):
     return response
 
 
+@csrf_exempt
 def play(request):
     # Get game info
     req = json.loads(request.body)
@@ -97,10 +113,12 @@ def play(request):
         current_board = game.make_move(current_board, game.computer_letter, move)
         if game.is_winner(current_board, game.computer_letter):
             game._is_over = True
+            request.session['comp_win'] += 1
             return json_response(status='Computer Won', value=move, player=game.computer_letter.lower())
         else:
             if game.is_board_full(current_board):
                 game._is_over = True
+                request.session['tie'] += 1
                 return json_response(status='Tie', value=move, player=game.computer_letter.lower())
             else:
                 request.session['board'] = current_board
@@ -112,10 +130,12 @@ def play(request):
         current_board = game.make_move(current_board, player_letter, move)
         if game.is_winner(current_board, player_letter):
             game._is_over = True
+            request.session['plr_win'] += 1
             return json_response(status='Player Won', value=move, player=player_letter.lower())
         else:
             if game.is_board_full(current_board):
                 game._is_over = True
+                request.session['tie'] += 1
                 return json_response(status='Tie', value=move, player=player_letter.lower())
             else:
                 request.session['board'] = current_board

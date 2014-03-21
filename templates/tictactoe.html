@@ -121,6 +121,11 @@
 {% else %}
 <body ng-app="TicTacToe" ng-controller="TicTacCtrl">
 {% endif %}
+    <div id="score">
+        <p style="font-size: 22px">Player: <span style="color: green">{{ score.player }}</span> -
+        Computer: <span style="color: red">{{ score.computer }}</span> -
+        Tie: <span style="color: blue">{{ score.tie }}</span></p>
+    </div>
     <div id="board">
       <table>
         <tr>
