@@ -89,6 +89,7 @@ class Game:
         if self.is_space_free(board, 4):
             return 4
 
+        # Check for fork attempts and block them
         if board.count('') > 1:
             for i in corner_list:
                 copy_list = corner_list
