@@ -6,7 +6,6 @@ from tictac.views import board, play, clear_board, home, get_player_letter, get_
 urlpatterns = patterns('',
     url(r'^$',home , name="home"),
     url(r'^board/$', board, name="board"),
-    url(r'^init/$', clear_board, name="init_game"),
     url(r'^play/$', play, name="play"),
     url(r'^get_player_letter/$', get_player_letter, name='player_letter'),
     url(r'^get_player_name/$', get_player_name, name='player_name')

@@ -26,8 +26,6 @@ def clear_board(request):
     """
     if 'board' in request.session:
         del request.session['board']
-    request.session['board'] = new_board()
-    return request.session['board']
 
 
 def get_player_letter(request):
@@ -99,26 +97,26 @@ def play(request):
         current_board = game.make_move(current_board, game.computer_letter, move)
         if game.is_winner(current_board, game.computer_letter):
             game._is_over = True
-            return json_response(status='Computer Won', value=move, player=game.computer_letter)
+            return json_response(status='Computer Won', value=move, player=game.computer_letter.lower())
         else:
             if game.is_board_full(current_board):
                 game._is_over = True
-                return json_response(status='Tie', value=move, player=game.computer_letter)
+                return json_response(status='Tie', value=move, player=game.computer_letter.lower())
             else:
                 request.session['board'] = current_board
                 request.session['player_name'] = 'human'
-                return json_response(value=move, player=game.computer_letter)
+                return json_response(value=move, player=game.computer_letter.lower())
 
     else:
         move = int(cell)
         current_board = game.make_move(current_board, player_letter, move)
         if game.is_winner(current_board, player_letter):
             game._is_over = True
-            return json_response(status='Player Won', value=move, player=player_letter)
+            return json_response(status='Player Won', value=move, player=player_letter.lower())
         else:
             if game.is_board_full(current_board):
                 game._is_over = True
-                return json_response(status='Tie', value=move, player=player_letter)
+                return json_response(status='Tie', value=move, player=player_letter.lower())
             else:
                 request.session['board'] = current_board
                 request.session['player_name'] = 'computer'
@@ -126,4 +124,5 @@ def play(request):
 
 
 def home(request):
+    clear_board(request)
     return render(request, 'home.html')
