@@ -86,6 +86,24 @@ class Game:
         if self.is_space_free(board, 4):
             return 4
 
+        if board[0] == self.player_letter and board[2] == self.player_letter:
+            return self.choose_random_move_from_list(board, [1, 3, 5, 7])
+
+        if board[0] == self.player_letter and board[6] == self.player_letter:
+            return self.choose_random_move_from_list(board, [1, 3, 5, 7])
+
+        if board[0] == self.player_letter and board[8] == self.player_letter:
+            return self.choose_random_move_from_list(board, [1, 3, 5, 7])
+
+        if board[2] == self.player_letter and board[6] == self.player_letter:
+            return self.choose_random_move_from_list(board, [1, 3, 5, 7])
+
+        if board[2] == self.player_letter and board[8] == self.player_letter:
+            return self.choose_random_move_from_list(board, [1, 3, 5, 7])
+
+        if board[6] == self.player_letter and board[8] == self.player_letter:
+            return self.choose_random_move_from_list(board, [1, 3, 5, 7])
+
         # Try to take one of the corners, if they are free.
         move = self.choose_random_move_from_list(board, [0, 2, 6, 8])
         if move is not None:
