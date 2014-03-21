@@ -89,7 +89,7 @@ class Game:
         if self.is_space_free(board, 4):
             return 4
 
-        if not self.is_board_full(board):
+        if board.count('') > 1:
             for i in corner_list:
                 copy_list = corner_list
                 copy_list.remove(i)
