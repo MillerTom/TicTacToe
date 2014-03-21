@@ -89,14 +89,14 @@ class Game:
         if self.is_space_free(board, 4):
             return 4
 
-        # Check if player is trying to create a fork and block the attempt
-        for i in corner_list:
-            copy_list = corner_list
-            copy_list.pop(i)
-            if board[i] == self.player_letter:
-                for j in copy_list:
-                    if board[j] == self.player_letter:
-                        return self.choose_random_move_from_list(board, side_list)
+        if not self.is_board_full(board):
+            for i in corner_list:
+                copy_list = corner_list
+                copy_list.remove(i)
+                if board[i] == self.player_letter:
+                    for j in copy_list:
+                        if board[j] == self.player_letter:
+                            return self.choose_random_move_from_list(board, side_list)
 
         # Try to take one of the corners, if they are free.
         move = self.choose_random_move_from_list(board, corner_list)

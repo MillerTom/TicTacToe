@@ -107,7 +107,7 @@
                     $scope['status' + data['value']] = data['player'];
                     $scope['checked' + data['value']] = true;
                 }).
-                error(function(){
+                error(function(data){
                     $scope.result = 'Error!';
                 });
             };
