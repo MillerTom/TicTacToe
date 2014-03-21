@@ -66,6 +66,9 @@ class Game:
         """
         Simple AI for Computer moves
         """
+        corner_list = [0, 2, 6, 8]
+        side_list = [1, 3, 5, 7]
+
         # First, check if we can win in the next move
         for i in xrange(9):
             copy = self.copy_board(board)
@@ -87,22 +90,21 @@ class Game:
             return 4
 
         # Check if player is trying to create a fork and block the attempt
-        corner_list = [0, 2, 6, 8]
         for i in corner_list:
             copy_list = corner_list
             copy_list.pop(i)
             if board[i] == self.player_letter:
                 for j in copy_list:
                     if board[j] == self.player_letter:
-                        return self.choose_random_move_from_list(board, [1, 3, 5, 7])
+                        return self.choose_random_move_from_list(board, side_list)
 
         # Try to take one of the corners, if they are free.
-        move = self.choose_random_move_from_list(board, [0, 2, 6, 8])
+        move = self.choose_random_move_from_list(board, corner_list)
         if move is not None:
             return move
 
         # Move on one of the sides.
-        return self.choose_random_move_from_list(board, [1, 3, 5, 7])
+        return self.choose_random_move_from_list(board, side_list)
 
     def is_board_full(self, board):
         # Return True if every space on the board has been taken. Otherwise return False.
